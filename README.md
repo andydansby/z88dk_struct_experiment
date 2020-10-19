@@ -6,6 +6,6 @@ tests seem to run clean, but still looking for bugs.
 Looking to optimize routines.
 Suggestions are welcome.
 
-Jokingly named "Worst Game Ever"
+Jokingly named "Most Boring Game Ever"
 
 feel free to use anything here.
