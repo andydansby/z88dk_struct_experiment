@@ -343,7 +343,7 @@ void index_cleared_baddies (void)
 	
 	printf("number of entries %d\n", temp2);
 	
-	for (temp1 = 0; temp1 < MAX_ENEMIES_ON_SCREEN; temp1 ++)
+	for (temp1 = 0; temp1 < temp2; temp1 ++)
 	{
 		printf("%d ) indexed entries %d\n", temp1, indexToDelete[temp1]);
 	}
@@ -370,41 +370,6 @@ void clean_baddies_array (void)
 	}
 }
 
-
-/*void clean_baddies_array_1 (void)
-{
-	temp2 = 0;
-	
-	for (temp1 = 0; temp1 < MAX_ENEMIES_ON_SCREEN; temp1 ++)
-	{
-		if (baddies[temp1].x != 0)
-		{
-			purge[temp2].x = baddies[temp1].x;
-			purge[temp2].x_desp = baddies[temp1].x_desp;
-			purge[temp2].y = baddies[temp1].y;
-			purge[temp2].sprnum = baddies[temp1].sprnum;
-			purge[temp2].movement = baddies[temp1].movement;
-			purge[temp2].energy = baddies[temp1].energy;
-			purge[temp2].param1 = baddies[temp1].param1;
-			purge[temp2].param2 = baddies[temp1].param2;
-			temp2 ++;
-		}
-	}
-	
-	for (temp1 = 0; temp1 < MAX_ENEMIES_ON_SCREEN; temp1 ++)
-	{
-		baddies[temp1].x = purge[temp1].x;
-		baddies[temp1].x_desp = purge[temp1].x_desp;
-		baddies[temp1].y = purge[temp1].y;
-		baddies[temp1].sprnum = purge[temp1].sprnum;
-		baddies[temp1].movement = purge[temp1].movement;
-		baddies[temp1].energy = purge[temp1].energy;
-		baddies[temp1].param1 = purge[temp1].param1;
-		baddies[temp1].param2 = purge[temp1].param2;
-	}
-}*/
-
-
 //Enemy_structure is large array 
 void clean_enemy_array (void)
 {
@@ -426,13 +391,6 @@ void clean_enemy_array (void)
 			Enemy_structure[enemyToDelete].param2 = 0;
 		}
 	}
-	
-	
-	
-	
-	//wherefrom
-	//enemyToDelete = baddies[enemyToDelete].wherefrom;
-
 }
 
 
