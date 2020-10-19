@@ -57,12 +57,7 @@ void main (void)
 		
 		
 		clean_enemy_array();
-		
-		
-		//print_baddies_array();
-			
-
-			
+					
 		printf("\nPress ENTER for next\n1 for the entire enemy array\n2 for the baddies array");
 			
 		while (1)
