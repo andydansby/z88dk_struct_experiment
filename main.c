@@ -11,6 +11,8 @@
 #define NEAR_PLAYER 2
 
 #define UNSIGNED_CHAR_MAX 255
+#define MAX_U_CHAR 255
+#define MAX_PLAYER_POS 250
 //--------------------- MACROS
 
 #include <stdio.h>//standard input output
@@ -19,6 +21,7 @@
 
 
 #include <input.h>
+
 #include <arch/spectrum.h>
 
 #include <intrinsic.h>//temp to place labels	powerful troubleshooting tool
@@ -29,6 +32,12 @@
 
 void main (void)
 {
+	extern unsigned int LEVEL_1_ENEMIES_LOCATIONS;
+	pointerAddy = &LEVEL_1_ENEMIES_LOCATIONS;//address of pointer
+	enemies_per_level =  memory_bpeek(pointerAddy);
+	
+	
+	
 	zx_cls(INK_BLACK | PAPER_WHITE);
 	puts("\x16\x01\x02");
 	//		\x16 == set cursor position
@@ -47,45 +56,35 @@ void main (void)
 	while (1)
 	{
 		printf("Player currently at = %d\n", player_x_position);
+		
 		//search_near_to_player(); //sets playerLow and playerHigh
+		
 		fill_baddies_array();
 		print_baddies_array();
 
-		enter_enemy_to_delete();
+		enter_enemy_to_delete();//<--WORKING ON
 		index_cleared_baddies();
-		clean_baddies_array();
 		
+		//printf("\nbaddies array BEFORE");
+		//print_baddies_array();
+		
+		clean_baddies_array();
+		printf("\nclean_baddies_array         ");
+		
+		//printf("\nbaddies array AFTER");
+		//print_baddies_array();
 		
 		clean_enemy_array();
-					
-		printf("\nPress ENTER for next\n1 for the entire enemy array\n2 for the baddies array");
-			
-		while (1)
-		{
-			if (in_key_pressed( IN_KEY_SCANCODE_1 ))
-			{
-				//printf("\n WTF");
-				print_entire_enemy_array();
-				break;
-			}			
-			if (in_key_pressed( IN_KEY_SCANCODE_2 ))
-			{
-				//printf("\n WTF");
-				print_baddies_array();
-				break;
-			}
-			if (in_key_pressed( IN_KEY_SCANCODE_ENTER ))
-			{
-				break;
-			}
-			in_pause(100);
-				
-		}
+		printf("clean_enemy_array");
+
+		print_arrays ();
+		
 		player_x_position ++;
-		//if (player_x_position > 255)
-		//	break;
-			
-		pauseWipe();
+		
+		if (player_x_position > 250)
+		{
+			break;
+		}
 	}
 
 		//pauseWipe();
