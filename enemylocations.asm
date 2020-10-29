@@ -31,16 +31,16 @@ _LEVEL_1_ENEMIES_LOCATIONS:
 
 ;; never put a enemy at 0 or 255
 ;;------------------------------
-	defb    $01,  $01,		10,   $00, bob,		00, $aa,	00
-	defb		02,		2,		20,		1, bob,		01, $aa,	01
-	defb		03,		3,		30,		2, bob,		02, $aa,	02
-	defb		04,		4,		40,		3, bob,		03, $aa,	03
-	defb		05,		5,		50,		4, bob,		04, $aa,	04	
-	defb		05,		6,		60,		5, bob,		05, $aa,	05
-	defb		06,		7,		70,		6, bob,		06, $aa,	06
-	defb		07,		8,		80,		7, bob,		07, $aa,	07
-	defb		08,		9,		90,		8, bob,		08, $aa,	08
-	defb		09,		9,		99,		9, bob,		09, $fe,	09
+	defb		01,		1,		10,   	1, bob,		01, $aa,	00;0
+	defb		02,		2,		20,		2, bob,		02, $aa,	01;1
+	defb		03,		3,		30,		3, bob,		03, $aa,	02;2
+	defb		04,		4,		40,		4, bob,		04, $aa,	03;3
+	defb		05,		5,		50,		5, bob,		05, $aa,	04;4
+	defb		05,		6,		60,		5, bob,		05, $aa,	05;5
+	defb		06,		7,		70,		6, bob,		06, $aa,	06;6
+	defb		07,		8,		80,		7, bob,		07, $aa,	07;7
+	defb		08,		9,		90,		9, bob,		08, $aa,	08;8
+	defb		09,		9,		99,		9, bob,		09, $fe,	09;9
 ;10
 	
 	defb		10, 		1, 	50, 		2, sue,		10, $ab,	10

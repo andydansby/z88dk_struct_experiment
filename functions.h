@@ -158,6 +158,23 @@ void pauseWipe (void)
 	puts("\x16\x01\x02");
 }
 
+// returns values from 1 to 255 inclusive, period is 255
+unsigned char xorshift8(void) {
+    y8 ^= (y8 << 7);
+    y8 ^= (y8 >> 5);
+    return y8 ^= (y8 << 3);
+}
+
+
+unsigned int timer (void)
+{
+	clock_1 = memory_bpeek(23672);
+	clock_2 = memory_bpeek(23673);
+	clock_3 = memory_bpeek(23674);
+	clock_4 = (65535*clock_3+256*clock_2+clock_1)/50;
+	return clock_4;
+}
+
 //-------------------------------------------------------------
 //	other routines
 //-------------------------------------------------------------
@@ -222,50 +239,51 @@ void purge_baddies_array (void)
 }
 
 
-void fill_baddies_array (void)
+void fill_baddies_array(void)
 {
-	//address of pointer
-	//enemies_per_level =  memory_bpeek(pointerAddy);
+	temp2 = 0;//no more than 6 entries
+	temp1 = player_x_position -1;
 	
 	playerLow = player_x_position;
 	playerHigh = player_x_position + NEAR_PLAYER;
-	
-	//if (playerLow < 1)
-	//	playerLow = 0;
+
 	if (playerHigh > MAX_PLAYER_POS)
 		playerHigh = MAX_PLAYER_POS;
 	
-	temp2 = 0;//no more than 10 entries
-
-	for (temp1 = 0; temp1 < enemies_per_level; temp1 ++)
+	while (temp2 < MAX_ENEMIES_ON_SCREEN )
 	{
-		//if ((enemy_locations[temp1].x >= playerLow) && (enemy_locations[temp1].x <= playerHigh)  && (enemy_locations[temp1].x != 0) )
-			//enemy_locations
-
-
-		if (enemy_locations[temp1].x >= playerLow) 
-			if(enemy_locations[temp1].x <= playerHigh)
-				if (enemy_locations[temp1].x != 0)//<----
-				{
-					//copy to baddies struct
-					baddies[temp2].x = enemy_locations[temp1].x;
-					baddies[temp2].x_desp = enemy_locations[temp1].x_desp;
-					baddies[temp2].y = enemy_locations[temp1].y;
-					baddies[temp2].sprnum = enemy_locations[temp1].sprnum;
-					baddies[temp2].movement = enemy_locations[temp1].movement;
-					baddies[temp2].energy = enemy_locations[temp1].energy;
-					baddies[temp2].param1 = enemy_locations[temp1].param1;
-					baddies[temp2].param2 = enemy_locations[temp1].param2;
-					baddies[temp2].wherefrom = temp1;
-					temp2 ++;
-				}
-			
-			else if (temp2 > MAX_ENEMIES_ON_SCREEN) 
-			{
-				break;//no more than 5 entries
-			}
-	}
+		temp3 = enemy_locations[temp1].x;
+		
+		if(temp3 > playerHigh)
+		{	break;}//if out of range
+	
+		if (temp3 == 0) 
+		{	temp1 ++;}//to bypass deleted baddies
+	
+		/*printf("\ntemp1 = %d", temp1);
+		printf("     temp2 = %d", temp2);
+		printf("     temp3 = %d", temp3);*/
+		
+		//copy to baddies struct
+		baddies[temp2].x = enemy_locations[temp1].x;
+		baddies[temp2].x_desp = enemy_locations[temp1].x_desp;
+		baddies[temp2].y = enemy_locations[temp1].y;
+		baddies[temp2].sprnum = enemy_locations[temp1].sprnum;
+		baddies[temp2].movement = enemy_locations[temp1].movement;
+		baddies[temp2].energy = enemy_locations[temp1].energy;
+		baddies[temp2].param1 = enemy_locations[temp1].param1;
+		baddies[temp2].param2 = enemy_locations[temp1].param2;
+		baddies[temp2].wherefrom = temp1;
+		
+		temp1 ++;//44046
+		//++ temp1;//44051
+		
+		temp2 ++;//44046
+		//++ temp2;//44048
+	}	
 }
+
+
 
 
 void print_baddies_array (void)
@@ -290,6 +308,21 @@ void print_baddies_array (void)
 			//printf("----------------------------------------------------\n");
 	}
 	//printf("\n\nPress a Key");
+}
+
+void auto_enemy_to_delete (void)
+{
+	enemyToDelete = decision;
+	
+	//tag baddy entry
+	baddies[enemyToDelete].x = 0;//<---
+	baddies[enemyToDelete].x_desp	= 0;
+	baddies[enemyToDelete].y = 0;
+	baddies[enemyToDelete].sprnum = MAX_U_CHAR;
+	baddies[enemyToDelete].movement = 0;
+	baddies[enemyToDelete].energy = 0;
+	baddies[enemyToDelete].param1 = 0;
+	baddies[enemyToDelete].param2 = 0;
 }
 
 
@@ -333,45 +366,50 @@ void enter_enemy_to_delete (void)
 void index_cleared_baddies (void)
 {
 	temp2 = 0;
-	temp3 = 0;
+	number_of_index_baddies = 0;
 	
 	for (temp1 = 0; temp1 < MAX_ENEMIES_ON_SCREEN; ++ temp1)
 	{
 		if (baddies[temp1].sprnum == MAX_U_CHAR)//<---
 		{
 			indexToDelete[temp2] = baddies[enemyToDelete].wherefrom;
-			temp3 ++;
+			number_of_index_baddies ++;
 		}
 		else
 		{
 			indexToDelete[temp2] = MAX_U_CHAR;
 		}
+		
+		//now clean baddies array at the same time to speed things along
+		baddies[temp1].x = 0;
+		baddies[temp1].x_desp = 0;
+		baddies[temp1].y =  0;
+		baddies[temp1].sprnum = 0;
+		baddies[temp1].movement = 0;
+		baddies[temp1].energy = 0;
+		baddies[temp1].param1 = 0;
+		baddies[temp1].param2 = 0;
+		baddies[temp1].wherefrom = 0;	
+		
 		temp2 ++;		
 	}
-	
-	printf("number of entries in index %d\n", temp3);
 }
 
-
-
-void clean_baddies_array (void)
+/*void clean_baddies_array (void)
 {
 	for (temp1 = 0; temp1 < MAX_ENEMIES_ON_SCREEN; ++ temp1)
 	{
-		//if (indexToDelete[temp1] != 255)
-		{
-			baddies[temp1].x = 0;
-			baddies[temp1].x_desp = 0;
-			baddies[temp1].y =  0;
-			baddies[temp1].sprnum = 0;
-			baddies[temp1].movement = 0;
-			baddies[temp1].energy = 0;
-			baddies[temp1].param1 = 0;
-			baddies[temp1].param2 = 0;
-			baddies[temp1].wherefrom = 0;			
-		}
+		baddies[temp1].x = 0;
+		baddies[temp1].x_desp = 0;
+		baddies[temp1].y =  0;
+		baddies[temp1].sprnum = 0;
+		baddies[temp1].movement = 0;
+		baddies[temp1].energy = 0;
+		baddies[temp1].param1 = 0;
+		baddies[temp1].param2 = 0;
+		baddies[temp1].wherefrom = 0;			
 	}
-}
+}*//
 
 //enemy_locations is large array 
 void clean_enemy_array (void)
@@ -391,35 +429,6 @@ void clean_enemy_array (void)
 			enemy_locations[enemyToDelete].param1 = 0;
 			enemy_locations[enemyToDelete].param2 = 0;
 		}
-		
-		
-		
-		/*
-		baddies[temp1].x = 0;
-		baddies[temp1].x_desp = 0;
-		baddies[temp1].y =  0;
-		baddies[temp1].sprnum = 0;
-		baddies[temp1].movement = 0;
-		baddies[temp1].energy = 0;
-		baddies[temp1].param1 = 0;
-		baddies[temp1].param2 = 0;
-		//indexToDelete[temp1] = 0;
-		*/
-		
-		/*
-		if (indexToDelete[temp1] != MAX_U_CHAR)
-		{
-			enemyToDelete = indexToDelete[temp1];
-			
-			enemy_locations[enemyToDelete].x = 0;
-			enemy_locations[enemyToDelete].x_desp	= 0;
-			enemy_locations[enemyToDelete].y = 0;
-			enemy_locations[enemyToDelete].sprnum = 0;
-			enemy_locations[enemyToDelete].movement = 0;
-			enemy_locations[enemyToDelete].energy = 0;
-			enemy_locations[enemyToDelete].param1 = 0;
-			enemy_locations[enemyToDelete].param2 = 0;
-		}*/
 	}
 }
 
@@ -516,7 +525,7 @@ void print_arrays (void)
 
 
 
-
+ 
 
 
 

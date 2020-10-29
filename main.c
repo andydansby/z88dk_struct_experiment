@@ -5,6 +5,10 @@
 //--------------------- MACROS
 #define memory_bpeek(a)    (*(unsigned char *)(a))
 
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+
+
 #define MAX_ENEMIES 255
 #define MAX_ENEMIES_ON_SCREEN 6
 //MAX_ENEMIES_ON_SCREEN should be the number of enemies you want to see on screen + 1
@@ -30,29 +34,16 @@
 #include "functions.h"
 
 
-void main (void)
+
+void Manual_test (void)
 {
-	extern unsigned int LEVEL_1_ENEMIES_LOCATIONS;
-	pointerAddy = &LEVEL_1_ENEMIES_LOCATIONS;//address of pointer
-	enemies_per_level =  memory_bpeek(pointerAddy);
-	
-	
-	
-	zx_cls(INK_BLACK | PAPER_WHITE);
-	puts("\x16\x01\x02");
-	//		\x16 == set cursor position
-	//		\x01 = x position (01) in hex
-	//		\x02 = y position (0C) in hex
-		
-	printf("Welcome to the most boring game ever\n");
-		
 	player_start_location();		
 	player_x_position = playerStart;
 		
 	//look at enemy_locations[]
 	fill_enemy_location_array (); // this is large array filled in with level info
 	//print_enemy_location_array();
-		
+	
 	while (1)
 	{
 		printf("Player currently at = %d\n", player_x_position);
@@ -65,10 +56,9 @@ void main (void)
 		enter_enemy_to_delete();//<--WORKING ON
 		index_cleared_baddies();
 		
-		//printf("\nbaddies array BEFORE");
-		//print_baddies_array();
+		printf("number of entries in index %d\n", number_of_index_baddies);
 		
-		clean_baddies_array();
+		//clean_baddies_array();
 		printf("\nclean_baddies_array         ");
 		
 		//printf("\nbaddies array AFTER");
@@ -86,9 +76,95 @@ void main (void)
 			break;
 		}
 	}
-
 		//pauseWipe();
 }
 
+
+void Speed_test (void)
+{
+	player_x_position = 0;
+	
+	fill_enemy_location_array (); // this is large array filled in with level info
+	
+	ms_start = timer();//just before our loop
+	
+	//44070 with nothing but loop
+	//44099 with everything in loop
+	while (player_x_position < 250)
+	{
+		fill_baddies_array();
+
+		decision = xorshift8() %6;
+		//decision = 3;
+		//min is 0 and 5 is max with %6
+		
+		auto_enemy_to_delete();
+		
+		index_cleared_baddies();
+		//clean_baddies_array();
+		
+		clean_enemy_array();
+
+		++ player_x_position;
+	}
+	ms_end = timer();
+	ms_diff = ms_end - ms_start;
+
+	printf("finished in  %ld ms\n",ms_diff);
+}
+
+//xorshift8 takes 12 ms to run
+//full = 44149
+//fill_baddies_array(); = 44146 = 3 ms
+//auto_enemy_to_delete = 44139 = 7 ms
+//index_cleared_baddies = 44146 = 3 ms
+//clean_baddies_array = 44146 = 3 ms
+//clean_enemy_array = 44146 = 3 ms
+
+//44129 with adjustment in fill_baddies_array()
+//	player_x_position ++;	44145
+//	++ player_x_position;	44144
+
+
+void main (void)
+{
+	extern unsigned int LEVEL_1_ENEMIES_LOCATIONS;
+	pointerAddy = &LEVEL_1_ENEMIES_LOCATIONS;//address of pointer
+	enemies_per_level =  memory_bpeek(pointerAddy);
+	
+	zx_cls(INK_BLACK | PAPER_WHITE);
+	puts("\x16\x01\x02");
+	//		\x16 == set cursor position
+	//		\x01 = x position (01) in hex
+	//		\x02 = y position (0C) in hex
+		
+	printf("Welcome to the most boring game ever\n");
+	
+	printf("\n1 for Manual Entry Test");	
+	printf("\n2 for the Speed Test");
+		
+	while (1)
+	{
+		if (in_key_pressed( IN_KEY_SCANCODE_1 ))
+		{
+			in_wait_nokey();
+			zx_cls(INK_BLACK | PAPER_WHITE);
+			puts("\x16\x01\x02");
+			Manual_test();
+		}			
+		if (in_key_pressed( IN_KEY_SCANCODE_2 ))
+		{
+			in_wait_nokey();
+			zx_cls(INK_BLACK | PAPER_WHITE);
+			puts("\x16\x01\x02");
+			Speed_test();
+		}
+	}
+	
+	
+}
+	
+		
+	
 
 

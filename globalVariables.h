@@ -35,10 +35,19 @@ unsigned char temp1 = 0;
 unsigned char temp2 = 0;
 unsigned char temp3 = 0;
 
+unsigned char number_of_index_baddies = 0;
 
+static unsigned char y8 = 1;//used in randomizer can be any 8 bit number
+
+unsigned char decision;
 
 unsigned char enemies_per_level = 0;
 
+int ms_start, ms_end, ms_diff = 0;
+unsigned char clock_1 = 0;
+unsigned char clock_2 = 0;
+unsigned char clock_3 = 0;
+unsigned int clock_4 = 0;
 //-----------------------------------------------------------------------
 
 unsigned int pointerAddy;
